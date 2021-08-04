@@ -14,14 +14,10 @@
 DIR directory containing org files that should be published as a single website. If omitted, will be the current directory
 
 "
-  (message "%s" dir)
+  (message "Publishing org files in %s" dir)
   )
 
-(defun pubme-disp-help (flag)
-  (message "found %s" flag)
-  )
-
-
+  
 (defun pubme-print-usage ()
   (message "Usage: pubme [OPTION]... [project-dir]\n")
   (message "Publishes a collection of org files as a static website\n")
@@ -42,7 +38,8 @@ DIR directory containing org files that should be published as a single website.
            ((not (string-prefix-p option "--")) (setq projdir option))
            )
           )
-      )
+        )
+      (pubme projdir)
       (kill-emacs 0)
     )
   )
