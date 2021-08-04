@@ -20,13 +20,30 @@ DIR directory containing org files that should be published as a single website.
 (defun pubme-disp-help (flag)
   (message "found %s" flag)
   )
-(message "%s" argv)
-; if running as a script, parse the command line and call the appropriate function
-(if noninteractive
-    (if (elt argv 0)
-        (pubme (elt argv 0))
-      (pubme default-directory)
-      )
+
+
+(defun pubme-print-usage ()
+  (message "Usage: pubme [OPTION]... [project-dir]\n")
+  (message "Publishes a collection of org files as a static website\n")
+  (message "project-dir is the directory for the org project (defaults to current directory)\n")
+  (message "  -h, --help
+              display this help message and exit")
   )
 
-(kill-emacs 0)
+;; if running as a script, parse the command line and call the appropriate function
+(if noninteractive
+    (let ((projdir default-directory))
+      (while argv
+        (let ((option (pop argv)))
+          (cond
+           ((string= option "--")               nil)
+           ((string= option "-h")               (pubme-print-usage)) 
+           ((string= option "--help")           (pubme-print-usage))
+           ((not (string-prefix-p option "--")) (setq projdir option))
+           )
+          )
+      )
+      (kill-emacs 0)
+    )
+  )
+
