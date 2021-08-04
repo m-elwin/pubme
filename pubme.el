@@ -2,7 +2,7 @@
 ":"; # This is a shell script that also functions as a valid elisp file
 ":"; # This way we can parse all arguments passed to the script and 
 ":"; # Find emacs wherever it is on the path rather than a fixed location
-":"; # See https://gist.github.com/ctarbide/99b0ac9f7d6bef19cdd3e9f71b4cbcf7 for meaning of the above line
+":"; # See https://gist.github.com/ctarbide/99b0ac9f7d6bef19cdd3e9f71b4cbcf7 for meaning of the below line
 ":"; exec emacs --quick --script "$0" -- "$@" # -*- mode: emacs-lisp; lexical-binding: t; -*-
 
 
