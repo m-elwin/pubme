@@ -15,9 +15,15 @@ DIR directory containing org files that should be published as a single website.
 
 "
   (message "Publishing org files in %s" dir)
-  )
+  ;; Find all the org files
+  (org-publish `("main-project"
+      :base-directory ,dir
+      :publishing-dir ,(concat (file-name-as-directory dir) "html")
+      :recursive t
+      )
+   )
+)
 
-  
 (defun pubme-print-usage ()
   (message "Usage: pubme [OPTION]... [project-dir]\n")
   (message "Publishes a collection of org files as a static website\n")
@@ -25,6 +31,8 @@ DIR directory containing org files that should be published as a single website.
   (message "  -h, --help
               display this help message and exit")
   )
+
+(require 'org)
 
 ;; if running as a script, parse the command line and call the appropriate function
 (if noninteractive
