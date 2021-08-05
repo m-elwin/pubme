@@ -24,10 +24,24 @@ DIR directory containing org files that should be published as a single website.
       :publishing-function org-html-publish-to-html
       :recursive t
       :broken-links mark
-      :org-html-doctype html5
+      ; Look up the following options with C-h org-<option-name-here>
+      :html-doctype "html5"
+      :html-html5-fancy t
+      :html-head-include-default-style nil
+      :html-head "<link rel=\"stylesheet\" href=\"pubme.css\" type=\"text/css\"/>"
       )
    :force
    )
+  (org-publish
+   `("pubme-style"
+     :base-directory ,(file-name-directory load-file-name)
+     :base-extension "css\\|html\\|jpg\\|png"
+     :publishing-directory ,(concat (file-name-as-directory dir) "html")
+     :publishing-function org-publish-attachment
+     )
+   :force
+   )
+
 )
 
 (defun pubme-print-usage ()
