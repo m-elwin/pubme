@@ -1,4 +1,3 @@
-<style type="text/css">
 /*
 Matthew Elwin
 css for the nume template for making websites
@@ -9,8 +8,7 @@ When printing, the menu will be hidden
 
 */
 
-
-nav#TOC{
+nav#table-of-contents{
     width: 20%;
     height: 100%;
     position:fixed!important;
@@ -24,7 +22,8 @@ nav#TOC{
     right: 0.25em;
     top: 0.25em;
 }
-.content{
+
+div[id|=outline],h1.title{
     margin-left: 21%;
     padding-left: 4em;
 }
@@ -438,4 +437,3 @@ table td {
 }
 
 
-</style> 
