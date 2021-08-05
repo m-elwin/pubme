@@ -23,6 +23,8 @@ DIR directory containing org files that should be published as a single website.
       :publishing-directory ,(concat (file-name-as-directory dir) "html")
       :publishing-function org-html-publish-to-html
       :recursive t
+      :broken-links mark
+      :org-html-doctype html5
       )
    :force
    )
@@ -41,6 +43,7 @@ DIR directory containing org files that should be published as a single website.
 ;; if running as a script, parse the command line and call the appropriate function
 (if noninteractive
     (let ((projdir default-directory))
+      (setq make-backup-files nil)
       (while argv
         (let ((option (pop argv)))
           (cond
