@@ -14,13 +14,17 @@
 DIR directory containing org files that should be published as a single website. If omitted, will be the current directory
 
 "
+  (if (not dir) (setq dir default-directory))
   (message "Publishing org files in %s" dir)
   ;; Find all the org files
-  (org-publish `("main-project"
+  (org-publish
+   `("main-project"
       :base-directory ,dir
-      :publishing-dir ,(concat (file-name-as-directory dir) "html")
+      :publishing-directory ,(concat (file-name-as-directory dir) "html")
+      :publishing-function org-html-publish-to-html
       :recursive t
       )
+   :force
    )
 )
 
