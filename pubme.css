@@ -24,7 +24,7 @@ nav#table-of-contents{
     top: 0.25em;
 }
 
-div[id|=outline],h1.title{
+.outer{
     margin-left: 21%;
     padding-left: 4em;
 }
