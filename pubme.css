@@ -1,6 +1,6 @@
 /*
 Matthew Elwin
-css for the nume template for making websites
+css for the pubme template for making websites
 
 Contains code modified from with https://gist.github.com/killercup/5917178
 Mostly using the aesthetics from above, but added a table of contents menu to the left.
@@ -12,6 +12,7 @@ nav#table-of-contents{
     width: 20%;
     height: 100%;
     position:fixed!important;
+    top: 0.1em;
     z-index:1;
     overflow:auto;
     padding-right: 2em;
