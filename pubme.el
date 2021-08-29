@@ -9,7 +9,10 @@
 
 (require 'org)
 (require 'ox-html)
-(load-file (concat (file-name-directory load-file-name) "/pubme-debug.el"))
+
+(defvar pubme-dir (file-name-directory (if load-in-progress load-file-name (buffer-file-name))) "The installation directory of pubme")
+
+(load-file (concat pubme-dir "/pubme-debug.el"))
 
 ;;; We just tweak the final html, since that is easier than figuring out org export
 ;;; (and I'm not convinced I can change the order of things like I need)
@@ -17,10 +20,7 @@
     (text back-end info)
   (with-temp-buffer
     (insert text)
-    ;; 1. Find the table of contents and move it outside the content div
-    ;; 2. Replace the <div id="content"> with the nested div tags
-    ;; 3. Replace the </body> with the appropriate closing div tags
-    
+    ; Here we can tweak final html.  No longer needed at the moment
     (buffer-substring-no-properties (point-min) (point-max)) ;converts the buffer back to a string
     )
 )
@@ -49,12 +49,13 @@ PUBLISH-TO the backend to use for the html (defaults to pubme-publish-to-html)
 "
   (if (not dir) (setq dir default-directory))
   (if (not publish-to) (setq publish-to 'pubme-publish-to-html))
-  (message "Publishing org files in %s" dir)
+  (setq pub-dir (concat (file-name-as-directory dir) "html"))
+
   ;; Find all the org files
   (org-publish
    `("main-project"
       :base-directory ,dir
-      :publishing-directory ,(concat (file-name-as-directory dir) "html")
+      :publishing-directory ,pub-dir
       :publishing-function ,publish-to
       :recursive t
       :broken-links mark
@@ -65,9 +66,11 @@ PUBLISH-TO the backend to use for the html (defaults to pubme-publish-to-html)
       :html-head "<link rel=\"stylesheet\" href=\"pubme.css\" type=\"text/css\"/>"
       :html-postamble t
       :html-postamble-format (("en" "<p class=\"outline-2\">Author: %a</p>"))
+      :html-link-home "index.html"
       )
    :force
    )
+
   (org-publish
    `("pubme-style"
      :base-directory ,(file-name-directory load-file-name)
