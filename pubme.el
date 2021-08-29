@@ -9,6 +9,7 @@
 
 (require 'org)
 (require 'ox-html)
+(load-file (concat (file-name-directory load-file-name) "/pubme-debug.el"))
 
 ;;; We just tweak the final html, since that is easier than figuring out org export
 ;;; (and I'm not convinced I can change the order of things like I need)
@@ -34,20 +35,27 @@
   (org-publish-org-to 'pubme-html filename ".html" plist pub-dir)
   )
 
-(defun pubme (&optional dir)
+(defun pubme-publish-to-debug (plist filename pub-dir)
+  "Publish an org file to a debug html file. Return output file name."
+  (org-publish-org-to 'pubme-html-debug filename ".html" plist pub-dir)
+  )
+
+(defun pubme (&optional dir publish-to)
   "Publish a directory containing org files.
 
 DIR directory containing org files that should be published as a single website. If omitted, will be the current directory
+PUBLISH-TO the backend to use for the html (defaults to pubme-publish-to-html)
 
 "
   (if (not dir) (setq dir default-directory))
+  (if (not publish-to) (setq publish-to 'pubme-publish-to-html))
   (message "Publishing org files in %s" dir)
   ;; Find all the org files
   (org-publish
    `("main-project"
       :base-directory ,dir
       :publishing-directory ,(concat (file-name-as-directory dir) "html")
-      :publishing-function pubme-publish-to-html
+      :publishing-function ,publish-to
       :recursive t
       :broken-links mark
       :html-doctype "html5"
@@ -76,6 +84,8 @@ DIR directory containing org files that should be published as a single website.
   (message "project-dir is the directory for the org project (defaults to current directory)\n")
   (message "  -h, --help
               display this help message and exit")
+  (message "  -d, --debug
+              generate markup with debugging information")
   )
 
 
@@ -89,6 +99,8 @@ DIR directory containing org files that should be published as a single website.
            ((string= option "--")               nil)
            ((string= option "-h")               (progn (pubme-print-usage) (kill-emacs 0))) 
            ((string= option "--help")           (progn (pubme-print-usage) (kill-emacs 0)))
+           ((string= option "-d")               (progn (pubme projdir 'pubme-publish-to-debug) (kill-emacs 0))) 
+           ((string= option "--debug")          (progn (pubme projdir 'pubme-publish-to-debug) (kill-emacs 0))) 
            ((not (string-prefix-p option "--")) (setq projdir option))
            )
           )
