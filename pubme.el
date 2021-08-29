@@ -52,6 +52,7 @@ PUBLISH-TO the backend to use for the html (defaults to pubme-publish-to-html)
   (setq pub-dir (concat (file-name-as-directory dir) "html"))
 
   ;; Find all the org files
+  ;; For the available options see https://orgmode.org/manual/Publishing-options.html
   (org-publish
    `("main-project"
       :base-directory ,dir
@@ -67,6 +68,8 @@ PUBLISH-TO the backend to use for the html (defaults to pubme-publish-to-html)
       :html-postamble t
       :html-postamble-format (("en" "<p class=\"outline-2\">Author: %a</p>"))
       :html-link-home "index.html"
+      :with-sub-superscripts nil
+      :with-section-numbers nil
       )
    :force
    )
