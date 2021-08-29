@@ -20,7 +20,7 @@
     ;; 1. Find the table of contents and move it outside the content div
     ;; 2. Replace the <div id="content"> with the nested div tags
     ;; 3. Replace the </body> with the appropriate closing div tags
-     
+    
     (buffer-substring-no-properties (point-min) (point-max)) ;converts the buffer back to a string
     )
 )
@@ -63,6 +63,8 @@ PUBLISH-TO the backend to use for the html (defaults to pubme-publish-to-html)
       :html-head-include-scripts nil
       :html-head-include-default-style nil
       :html-head "<link rel=\"stylesheet\" href=\"pubme.css\" type=\"text/css\"/>"
+      :html-postamble t
+      :html-postamble-format (("en" "<p class=\"outline-2\">Author: %a</p>"))
       )
    :force
    )

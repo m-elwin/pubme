@@ -20,18 +20,18 @@ nav#table-of-contents{
 }
 
 
-.home_up{
+#org-div-home-and-up{
     position: fixed;
     right: 0.25em;
     top: 0.25em;
 }
 
-#content{
+#content, #postamble {
     margin-left: 21%;
     padding-left: 4em;
 }
 
-.outline-2, header{
+.outline-2, header {
     margin: 0 auto;
     min-width: 30em;
     max-width: 50em;
@@ -42,10 +42,6 @@ nav#table-of-contents{
 }
 
 .container:after,.container:before{content:"";display:table;clear:both}
-
-.footer {
-    font-size: 9pt
-}
 
 html {
   font-size: 100%;
