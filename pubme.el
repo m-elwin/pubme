@@ -10,19 +10,23 @@
 (require 'org)
 (require 'ox-html)
 
-;;; 
-(defun pubme-body-filter
+;;; We just tweak the final html, since that is easier than figuring out org export
+;;; (and I'm not convinced I can change the order of things like I need)
+(defun pubme-final-filter
     (text back-end info)
-  ;; Table of contents is wrapped in nav. 
-  
-  (format "%s</div></div>"
-          (replace-regexp-in-string "</nav>"
-                                    "</nav><div class=outer><div class=inner>" text))
-  )
+  (with-temp-buffer
+    (insert text)
+    ;; 1. Find the table of contents and move it outside the content div
+    ;; 2. Replace the <div id="content"> with the nested div tags
+    ;; 3. Replace the </body> with the appropriate closing div tags
+     
+    (buffer-substring-no-properties (point-min) (point-max)) ;converts the buffer back to a string
+    )
+)
 
 (org-export-define-derived-backend 'pubme-html 'html
   :filters-alist
-  '((:filter-body . pubme-body-filter))
+  '((:filter-final-output . pubme-final-filter))
   )
 
 (defun pubme-publish-to-html (plist filename pub-dir)
@@ -83,8 +87,8 @@ DIR directory containing org files that should be published as a single website.
         (let ((option (pop argv)))
           (cond
            ((string= option "--")               nil)
-           ((string= option "-h")               (pubme-print-usage)) 
-           ((string= option "--help")           (pubme-print-usage))
+           ((string= option "-h")               (progn (pubme-print-usage) (kill-emacs 0))) 
+           ((string= option "--help")           (progn (pubme-print-usage) (kill-emacs 0)))
            ((not (string-prefix-p option "--")) (setq projdir option))
            )
           )
