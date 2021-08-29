@@ -16,7 +16,9 @@ nav#table-of-contents{
     z-index:1;
     overflow:auto;
     padding-right: 2em;
+    margin-left: -21%;
 }
+
 
 .home_up{
     position: fixed;
@@ -24,12 +26,12 @@ nav#table-of-contents{
     top: 0.25em;
 }
 
-.outer{
+#content{
     margin-left: 21%;
     padding-left: 4em;
 }
 
-.inner{
+.outline-2, header{
     margin: 0 auto;
     min-width: 30em;
     max-width: 50em;
