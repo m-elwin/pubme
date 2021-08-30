@@ -124,7 +124,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: normal;
 }
 
-h4, h5, h6 {
+h5, h6 {
   font-weight: bold;
 }
 
@@ -137,23 +137,23 @@ h1.title {
     font-size: 3em;
 }
 
-h2 {
+h2, .header-2 {
   font-size: 2em;
 }
 
-h3 {
+h3, .header-3 {
   font-size: 1.5em;
 }
 
-h4 {
-  font-size: 1.2em;
+h4, .header-4 {
+  font-size: 1.3em;
 }
 
-h5 {
+h5, .header-5 {
   font-size: 1em;
 }
 
-h6 {
+h6, .header-6 {
   font-size: 0.9em;
 }
 

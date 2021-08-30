@@ -6,11 +6,12 @@
 ;; Find emacs wherever it is on the path rather than a fixed location
 
 ;;; Used to publish a directory of org files to html, using my own css template
+;;; Tag a headline with :folded: to make it be folded by default
 
 (require 'org)
 (require 'ox-html)
 
-(defvar pubme-dir (file-name-directory (if load-in-progress load-file-name (buffer-file-name))) "The installation directory of pubme")
+(defconst pubme-dir (file-name-directory (if load-in-progress load-file-name (buffer-file-name))) "The installation directory of pubme")
 
 (load-file (concat pubme-dir "/pubme-debug.el"))
 
@@ -25,9 +26,28 @@
     )
 )
 
+(defun pubme-headline
+    (headline contents info)
+  (if (member "folded" (org-element-property :tags headline))
+      (let* ((level (+ (org-export-get-relative-level headline info)
+                       (1- (plist-get info :html-toplevel-hlevel))))
+             )
+        (format "<details><summary class=\"header-%s\">%s</summary>\n%s</details>"
+                level
+                (org-element-property :raw-value headline)
+                contents
+                )
+        )
+    (org-export-with-backend 'html headline contents info)
+    )
+  )
+
+
 (org-export-define-derived-backend 'pubme-html 'html
   :filters-alist
   '((:filter-final-output . pubme-final-filter))
+  :translate-alist
+    '((headline . pubme-headline))
   )
 
 (defun pubme-publish-to-html (plist filename pub-dir)
@@ -71,6 +91,7 @@ PUBLISH-TO the backend to use for the html (defaults to pubme-publish-to-html)
       :with-sub-superscripts nil
       :section-numbers nil
       :with-latex t
+      :with-tags not-in-toc
       )
    :force
    )
