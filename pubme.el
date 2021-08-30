@@ -102,7 +102,7 @@ PUBLISH-TO the backend to use for the html (defaults to pubme-publish-to-html)
       :html-postamble t
       :html-postamble-format (("en" "<p class=\"outline-2\">Author: %a</p>"))
       :html-link-home "index.html"
-      :with-sub-superscripts nil
+      :with-sub-superscript nil
       :section-numbers nil
       :with-latex t
       :with-tags not-in-toc
