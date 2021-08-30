@@ -7,6 +7,7 @@
 
 ;;; Used to publish a directory of org files to html, using my own css template
 ;;; Tag a headline with :folded: to make it be folded by default
+;;; The special block BEGIN_folded creates a folded section
 
 (require 'org)
 (require 'ox-html)
@@ -42,12 +43,25 @@
     )
   )
 
+(defun pubme-special-block
+    (special-block contents info)
+  (if (string= "folded" (org-element-property :type special-block))
+      (format "<details class=\"folded\"><summary>Details</summary>\n%s</details>"
+              contents
+              )
+    (org-export-with-backend 'html special-block contents info)
+    )
+  )
+
 
 (org-export-define-derived-backend 'pubme-html 'html
   :filters-alist
-  '((:filter-final-output . pubme-final-filter))
+  '((:filter-final-output . pubme-final-filter)
+    )
   :translate-alist
-    '((headline . pubme-headline))
+  '((headline . pubme-headline)
+    (special-block . pubme-special-block)
+    )
   )
 
 (defun pubme-publish-to-html (plist filename pub-dir)

@@ -37,6 +37,11 @@ nav#table-of-contents{
     max-width: 50em;
 }
 
+.folded{
+    margin-top: -10pt;
+}
+
+
 .no-foot{
     min-height: 100vh 
 }
