@@ -111,15 +111,24 @@ PUBLISH-TO the backend to use for the html (defaults to pubme-publish-to-html)
    )
 
   (org-publish
-   `("pubme-style"
-     :base-directory ,(file-name-directory load-file-name)
-     :base-extension "css\\|html\\|jpg\\|png"
+   `("project-data"
+     :base-directory ,(concat dir "/images")
+     :base-extension "css\\|html\\|jpg\\|png\\|svg"
      :publishing-directory ,(concat (file-name-as-directory dir) "html")
      :publishing-function org-publish-attachment
      )
    :force
    )
 
+  (org-publish
+   `("pubme-style"
+     :base-directory ,(file-name-directory load-file-name)
+     :base-extension "css\\|html\\|jpg\\|png\\|svg"
+     :publishing-directory ,(concat (file-name-as-directory dir) "html")
+     :publishing-function org-publish-attachment
+     )
+   :force
+   )
 )
 
 (defun pubme-print-usage ()

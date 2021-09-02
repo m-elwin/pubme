@@ -31,7 +31,7 @@ nav#table-of-contents{
     padding-left: 4em;
 }
 
-.outline-2, header {
+.outline-2, header, nav + p {
     margin: 0 auto;
     min-width: 30em;
     max-width: 50em;
