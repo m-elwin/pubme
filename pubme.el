@@ -113,7 +113,7 @@ PUBLISH-TO the backend to use for the html (defaults to pubme-publish-to-html)
   (org-publish
    `("project-data"
      :base-directory ,(concat dir "/images")
-     :base-extension "css\\|html\\|jpg\\|png\\|svg"
+     :base-extension any
      :publishing-directory ,(concat (file-name-as-directory dir) "html")
      :publishing-function org-publish-attachment
      )
