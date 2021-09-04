@@ -100,7 +100,7 @@ PUBLISH-TO the backend to use for the html (defaults to pubme-publish-to-html)
       :html-head-include-default-style nil
       :html-head "<link rel=\"stylesheet\" href=\"pubme.css\" type=\"text/css\"/>"
       :html-postamble t
-      :html-postamble-format (("en" "<p class=\"outline-2\">Author: %a</p>"))
+      :html-postamble-format (("en" "<p><p class=\"outline-2\">Author: %a</p></p>"))
       :html-link-home "index.html"
       :with-sub-superscript nil
       :section-numbers nil
