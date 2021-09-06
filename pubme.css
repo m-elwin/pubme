@@ -17,6 +17,7 @@ nav#table-of-contents{
     overflow:auto;
     padding-right: 2em;
     margin-left: -21%;
+    font-size: 14px;
 }
 
 
@@ -349,11 +350,11 @@ table td {
 }
 
 /* When the screen gets too narrow, hide the toc*/
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 900px) {
     nav {
         visibility: hidden
     }
-    .content {
+    #content {
         margin-left: 0;
     }
 }
