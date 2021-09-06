@@ -2519,12 +2519,3 @@ table td {
         background-color: #eee8aa;
       }
 
-      a {
-        color: inherit;
-        background-color: inherit;
-        font: inherit;
-        text-decoration: inherit;
-      }
-      a:hover {
-        text-decoration: underline;
-      }
