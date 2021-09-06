@@ -11,10 +11,28 @@
 
 (require 'org)
 (require 'ox-html)
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/"))
+
+(setq package-load-list '((htmlize t)))
+(package-initialize)
+
+;;; Allow us to apply css to syntax highlighting
+(unless (package-installed-p 'htmlize)
+  (if (yes-or-no-p "Install htmlize for syntax highlighting in code blocks? ")
+      (progn
+        (package-install 'htmlize)
+        )
+    )
+  )
+
+(setq org-html-htmlize-output-type 'css)
 
 (defconst pubme-dir (file-name-directory (if load-in-progress load-file-name (buffer-file-name))) "The installation directory of pubme")
 
 (load-file (concat pubme-dir "/pubme-debug.el"))
+
 
 ;;; We just tweak the final html, since that is easier than figuring out org export
 ;;; (and I'm not convinced I can change the order of things like I need)
@@ -84,7 +102,7 @@ PUBLISH-TO the backend to use for the html (defaults to pubme-publish-to-html)
   (if (not dir) (setq dir default-directory))
   (if (not publish-to) (setq publish-to 'pubme-publish-to-html))
   (setq pub-dir (concat (file-name-as-directory dir) "html"))
-
+  (message "BATCH: %s" org-html-htmlize-output-type)
   ;; Find all the org files
   ;; For the available options see https://orgmode.org/manual/Publishing-options.html
   (org-publish
