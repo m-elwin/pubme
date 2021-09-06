@@ -102,7 +102,6 @@ PUBLISH-TO the backend to use for the html (defaults to pubme-publish-to-html)
   (if (not dir) (setq dir default-directory))
   (if (not publish-to) (setq publish-to 'pubme-publish-to-html))
   (setq pub-dir (concat (file-name-as-directory dir) "html"))
-  (message "BATCH: %s" org-html-htmlize-output-type)
   ;; Find all the org files
   ;; For the available options see https://orgmode.org/manual/Publishing-options.html
   (org-publish
