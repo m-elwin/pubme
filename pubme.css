@@ -32,7 +32,7 @@ nav#table-of-contents{
     padding-left: 4em;
 }
 
-.outline-2, header, nav + p, div#footnotes {
+.outline-2, header, nav + p, div#footnotes, div#content > details{
     margin: 0 auto;
     min-width: 30em;
     max-width: 50em;
