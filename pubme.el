@@ -8,6 +8,9 @@
 ;;; Used to publish a directory of org files to html, using my own css template
 ;;; Tag a headline with :folded: to make it be folded by default
 ;;; The special block BEGIN_folded creates a folded section
+;;; Use the #+GIT-PUBLISH-URL: to setup a remote git repository where the html is to be published (for use with static site hosting on e.g., github)
+;;;    The output files will be placed in a git repository, with a remote at the GIT-PUBLISH-URL
+;;;    when remote publishing, the current contents will be force-pushed to the remote
 
 (require 'org)
 (require 'ox-html)
@@ -31,7 +34,7 @@
 (setq org-html-htmlize-output-type 'css)
 
 (defconst pubme-dir (file-name-directory (if load-in-progress load-file-name (buffer-file-name))) "The installation directory of pubme")
-(defvar pubme-git-html-url nil "Location where html files should be pushed when publishing")
+(defvar pubme-git-publish-url nil "Location where html files should be pushed when publishing")
 
 (load-file (concat pubme-dir "/pubme-debug.el"))
 
@@ -76,14 +79,19 @@
     )
   )
 
-
 (defun pubme-options-filter
     (exp-plist backend)
   """ Translate some PUBME-specific options into html """
-  ;(unless pubme-git-html-url (setq pubme-git-html-url (plist-get exp-plist 'pubme-git-html-url)))
-  (message "!NEXT SECTION------------------------------")
-  (message "2ITS OPTION: %s" (plist-get exp-plist :with-pgit))
-  (message "!NEXT SECTION------------------------------")
+  (let ((publish-url (plist-get exp-plist :git-publish-url)))
+    (if (and pubme-git-publish-url publish-url)
+        (progn
+          (message "Can only set one GIT-PUBLISH-URL, but found two: %s and %s"
+                   publish-url pubme-git-publish-url)
+          (kill-emacs 1)
+          )
+          (if publish-url (setq pubme-git-publish-url publish-url))
+      )
+    )
   exp-plist
   )
 
@@ -97,7 +105,7 @@
     (special-block . pubme-special-block)
     )
   :options-alist
-  '((:with-pgit nil "pgit" nil))
+  '((:git-publish-url "GIT-PUBLISH-URL" "git-publish-url" nil))
   )
 
 (defun pubme-publish-to-html (plist filename pub-dir)
@@ -164,7 +172,7 @@ PUBLISH-TO the backend to use for the html (defaults to pubme-publish-to-html)
      )
    :force
    )
-  (message "HTML: %s" pubme-git-html-url)
+  (message "HTML: %s" pubme-git-publish-url)
   )
 
 (defun pubme-git-push-html(giturl &optional dir)
