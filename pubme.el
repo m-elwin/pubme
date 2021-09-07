@@ -124,6 +124,7 @@
 DIR directory containing org files that should be published as a single website. If omitted, will be the current directory
 PUBLISH-TO the backend to use for the html (defaults to pubme-publish-to-html)
 
+return the directory where everything was published
 "
   (if (not dir) (setq dir default-directory))
   (if (not publish-to) (setq publish-to 'pubme-publish-to-html))
@@ -172,7 +173,16 @@ PUBLISH-TO the backend to use for the html (defaults to pubme-publish-to-html)
      )
    :force
    )
-  (message "HTML: %s" pubme-git-publish-url)
+  (if pubme-git-publish-url
+      (progn
+        (message "Remote git url for publishing is: %s" pubme-git-publish-url)
+        (shell-command (format "git --git-dir %s/.git --work-tree %s init" pub-dir pub-dir))
+        (shell-command (format "git --git-dir %s/.git --work-tree %s remote add origin %s" pub-dir pub-dir pubme-git-publish-url))
+        (shell-command (format "git --git-dir %s/.git --work-tree %s add ." pub-dir pub-dir))
+        (shell-command (format "git --git-dir %s/.git --work-tree %s commit -m 'website'" pub-dir pub-dir))
+        )
+    )
+  pub-dir
   )
 
 (defun pubme-git-push-html(giturl &optional dir)
@@ -192,13 +202,15 @@ dir - the publishing directory (set to default-directory by default)
               display this help message and exit")
   (message "  -d, --debug
               generate markup with debugging information")
-              
+  (message " -p, --push
+              push the output html to the hosting site. Hosting site is
+              specified in index.org with #+GIT-PUBLISH-URL: git_remote_url_here")      
   )
 
 
 ;; if running as a script, parse the command line and call the appropriate function
 (if noninteractive
-    (let ((projdir default-directory))
+    (let ((projdir default-directory) (git-push nil) (pdir nil))
       (setq make-backup-files nil)
       (while argv
         (let ((option (pop argv)))
@@ -207,12 +219,29 @@ dir - the publishing directory (set to default-directory by default)
            ((string= option "-h")               (progn (pubme-print-usage) (kill-emacs 0))) 
            ((string= option "--help")           (progn (pubme-print-usage) (kill-emacs 0)))
            ((string= option "-d")               (progn (pubme projdir 'pubme-publish-to-debug) (kill-emacs 0))) 
-           ((string= option "--debug")          (progn (pubme projdir 'pubme-publish-to-debug) (kill-emacs 0))) 
+           ((string= option "--debug")          (progn (pubme projdir 'pubme-publish-to-debug) (kill-emacs 0)))
+           ((string= option "-p")               (setq git-push t))
+           ((string= option "--push")           (setq git-push t))
            ((not (string-prefix-p option "--")) (setq projdir option))
            )
           )
         )
-      (pubme projdir)
+      (setq pub-dir (pubme projdir))
+      (if git-push
+          (if pubme-git-publish-url
+              (progn
+                (message "Pushing to remote at %s" pubme-git-publish-url)
+                (shell-command (format "git --git-dir %s/.git --work-tree %s push -f -u origin %s:master" pub-dir pub-dir
+                                 (substring
+                                  (shell-command-to-string
+                                   (format "git --git-dir %s/.git --work-tree %s branch --show-current" pub-dir pub-dir)
+                                   )
+                                  0 -1))
+                         )
+                )
+            (message "You must specify a #+GIT-PUBLISH-URL: in index.org")
+            )
+        )
       (kill-emacs 0)
     )
   )
