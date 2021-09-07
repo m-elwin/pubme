@@ -15,6 +15,7 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/"))
 
+
 (setq package-load-list '((htmlize t)))
 (package-initialize)
 
@@ -30,6 +31,7 @@
 (setq org-html-htmlize-output-type 'css)
 
 (defconst pubme-dir (file-name-directory (if load-in-progress load-file-name (buffer-file-name))) "The installation directory of pubme")
+(defvar pubme-git-html-url nil "Location where html files should be pushed when publishing")
 
 (load-file (concat pubme-dir "/pubme-debug.el"))
 
@@ -45,8 +47,10 @@
     )
 )
 
+
 (defun pubme-headline
     (headline contents info)
+  """ Translate headlines into HTML """
   (if (member "folded" (org-element-property :tags headline))
       (let* ((level (+ (org-export-get-relative-level headline info)
                        (1- (plist-get info :html-toplevel-hlevel))))
@@ -63,6 +67,7 @@
 
 (defun pubme-special-block
     (special-block contents info)
+  """ Translate BEGIN_folded blocks into HTML """
   (if (string= "folded" (org-element-property :type special-block))
       (format "<details class=\"folded\"><summary>Details</summary>\n%s</details>"
               contents
@@ -72,14 +77,27 @@
   )
 
 
+(defun pubme-options-filter
+    (exp-plist backend)
+  """ Translate some PUBME-specific options into html """
+  ;(unless pubme-git-html-url (setq pubme-git-html-url (plist-get exp-plist 'pubme-git-html-url)))
+  (message "!NEXT SECTION------------------------------")
+  (message "2ITS OPTION: %s" (plist-get exp-plist :with-pgit))
+  (message "!NEXT SECTION------------------------------")
+  exp-plist
+  )
+
 (org-export-define-derived-backend 'pubme-html 'html
   :filters-alist
   '((:filter-final-output . pubme-final-filter)
+    (:filter-options . pubme-options-filter)
     )
   :translate-alist
   '((headline . pubme-headline)
     (special-block . pubme-special-block)
     )
+  :options-alist
+  '((:with-pgit nil "pgit" nil))
   )
 
 (defun pubme-publish-to-html (plist filename pub-dir)
@@ -146,7 +164,17 @@ PUBLISH-TO the backend to use for the html (defaults to pubme-publish-to-html)
      )
    :force
    )
-)
+  (message "HTML: %s" pubme-git-html-url)
+  )
+
+(defun pubme-git-push-html(giturl &optional dir)
+  "Push the html file to a remote git repository
+
+GITURL - the url of the remote git repository
+dir - the publishing directory (set to default-directory by default)
+"
+  (if (not dir) (setq dir default-directory))
+  )
 
 (defun pubme-print-usage ()
   (message "Usage: pubme [OPTION]... [project-dir]\n")
@@ -156,6 +184,7 @@ PUBLISH-TO the backend to use for the html (defaults to pubme-publish-to-html)
               display this help message and exit")
   (message "  -d, --debug
               generate markup with debugging information")
+              
   )
 
 
