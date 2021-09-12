@@ -58,7 +58,8 @@
       (let* ((level (+ (org-export-get-relative-level headline info)
                        (1- (plist-get info :html-toplevel-hlevel))))
              )
-        (format "<details><summary class=\"header-%s\">%s</summary>\n%s</details>"
+        (format "<details id=\"%s\"><summary class=\"header-%s\">%s</summary>\n%s</details>"
+                (org-export-get-reference headline info) ; we add the unique anchor link id to the top-level details to make anchor links work
                 level
                 (org-element-property :raw-value headline)
                 contents
