@@ -46,6 +46,11 @@ nav#table-of-contents{
     margin-top: -10pt;
 }
 
+details{
+    border-style: dotted;
+    padding: 5px;
+    border-color: lightgray;
+}
 
 .no-foot{
     min-height: 100vh 
