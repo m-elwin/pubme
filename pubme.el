@@ -137,6 +137,7 @@ return the directory where everything was published
       :base-directory ,dir
       :publishing-directory ,pub-dir
       :publishing-function ,publish-to
+      :exclude "private/.*"
       :recursive t
       :broken-links mark
       :html-doctype "html5"
