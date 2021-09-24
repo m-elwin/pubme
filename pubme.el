@@ -144,7 +144,7 @@ return the directory where everything was published
       :html-html5-fancy t
       :html-head-include-scripts nil
       :html-head-include-default-style nil
-      :html-head "<link rel=\"stylesheet\" href=\"pubme.css\" type=\"text/css\"/>"
+      :html-head "<link rel=\"stylesheet\" href=\"pubme.css\" type=\"text/css\"/><link rel=\"stylesheet\" href=\"../pubme.css\" type=\"text/css\"/><link rel=\"stylesheet\" href=\"../pubme.css\" type=\"text/css\"/>"
       :html-postamble t
       :html-postamble-format (("en" "<p><p class=\"outline-2\">Author: %a</p></p>"))
       :html-link-home "index.html"
