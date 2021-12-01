@@ -1,33 +1,13 @@
 #+TITLE: pubme org mode website
 #+AUTHOR: Matthew Elwin
-#+GIT-PUBLISH-URL: ./pubmegit
 The org-mode publishing method that I use for my website.
 
-* Directory Structure
+* Usage
 1. Each website is a nested structure of =.org= mode files.
 2. Running =pubme= inside this directory structure will generate an =html= directory with the website.
+   #+BEGIN_folded
+   =pubme= is both an emacs script file and a shell script (using emacs as the interpreter)
+   #+END_folded
 3. Files stored under =private/=  will not be published
 3. Setting =#+GIT-PUBLISH-URL= sets the url to a remote git repository. Running =pubme -p= will push the website to that repository.
-
-* Introduction
-  This is a top-level header[fn:myx]
-
-[fn:myx] A footnote?
-** This is second level
-   1. Hello
-*** This is the third level
-    1. Hello
-    #+BEGIN_folded
-    This is folded text
-    #+BEGIN_SRC bash
-    echo "can we nest this?"
-    #+END_SRC
-    #+END_folded
-
-    Here is some =inline= of the ~src~
-*** Test of overflow properties
-    #+BEGIN_SRC bash
-    echo "this is a very long line that will overflow so test it out, but it is not long enough yet so I will keep typing until it is"
-    #+END_SRC
-* Folded :folded:
-  The text in this section is initially hidden
+4. See =test/= for an example of the features
