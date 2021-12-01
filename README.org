@@ -3,6 +3,12 @@
 #+GIT-PUBLISH-URL: ./pubmegit
 The org-mode publishing method that I use for my website.
 
+* Directory Structure
+1. Each website is a nested structure of =.org= mode files.
+2. Running =pubme= inside this directory structure will generate an =html= directory with the website.
+3. Files stored under =private/=  will not be published
+3. Setting =#+GIT-PUBLISH-URL= sets the url to a remote git repository. Running =pubme -p= will push the website to that repository.
+
 * Introduction
   This is a top-level header[fn:myx]
 
