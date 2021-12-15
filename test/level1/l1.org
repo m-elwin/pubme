@@ -2,4 +2,4 @@
 #+AUTHOR: Matthew Elwin
 
 * This is
-another level in the test
+Another level in the test, in this case it is =${pubme.BASE_DIR}=

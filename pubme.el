@@ -11,10 +11,10 @@
 ;;; Use the #+GIT-PUBLISH-URL: to setup a remote git repository where the html is to be published (for use with static site hosting on e.g., github)
 ;;;    The output files will be placed in a git repository, with a remote at the GIT-PUBLISH-URL
 ;;;    when remote publishing, the current contents will be force-pushed to the remote
-;;; The string ${BASE_DIR} will be expanded to a relative path pointing to the base directory of exported files
+;;; The string ${pubme.BASE_DIR} will be expanded to a relative path pointing to the base directory of exported files
 ;;;    This feature was added as the easiest way to point to the sylesheet and make the home and up directories work when using
 ;;;    nested org files, without needing to make boilerplate template code
-
+;;; It can be escaped with \${pubme.BASE_DIR} (or \\ when using an elisp string)
 
 (require 'org)
 (require 'ox-html)
@@ -56,7 +56,15 @@
       )
     relpath
     )
-)
+  )
+
+(defun pubme-macro-expand
+    (var exp text)
+  """ Replace ${var} with exp in text, and unescape \\${var} as a literal view of ${var} """
+  (replace-regexp-in-string (format "[\\]\${%s}" var) (format "${%s}" var)
+                            (replace-regexp-in-string (format "\\([^\\]\\)\${%s}" var) (format "\\1%s" exp) text))
+  )
+
 ;;; We just tweak the final html, since that is easier than figuring out org export
 ;;; (and I'm not convinced I can change the order of things like I need)
 (defun pubme-final-filter
@@ -65,7 +73,7 @@
     ;; Here we can tweak final html.
     ;; First step is we do our macro replacement
 
-    (insert (replace-regexp-in-string "${BASE_DIR}" (relative-dirs pubme-base-dir (plist-get info :input-file)) text))
+    (insert (pubme-macro-expand "pubme.BASE_DIR" (relative-dirs pubme-base-dir (plist-get info :input-file)) text))
     (buffer-substring-no-properties (point-min) (point-max)) ;converts the buffer back to a string
     )
 )
@@ -168,7 +176,7 @@ return the directory where everything was published
       :html-html5-fancy t
       :html-head-include-scripts nil
       :html-head-include-default-style nil
-      :html-head "<link rel=\"stylesheet\" href=\"${BASE_DIR}/pubme.css\" type=\"text/css\"/>"
+      :html-head "<link rel=\"stylesheet\" href=\"${pubme.BASE_DIR}/pubme.css\" type=\"text/css\"/>"
       :html-postamble t
       :html-postamble-format (("en" "<p><p class=\"outline-2\">Author: %a</p></p>"))
       :html-link-home "index.html"

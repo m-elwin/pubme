@@ -36,4 +36,9 @@ Testing the features of the pubme org-mode publishing script.
 * Folded :folded:
   The text in this section is initially hidden
 * Next level
-[[./level1/l1.org][Next Level Link]]
+[[./level1/l1.org][Testing nested link levels]]
+
+** For developers:
+In elisp code, use =\${pubme.BASE_DIR}= to expand to the relative path
+of this file to the base directory (in this case it is =${pubme.BASE_DIR}=).
+When using a string the =\= must itself be escaped (=\\=)
