@@ -179,7 +179,7 @@ return the directory where everything was published
       :html-head "<link rel=\"stylesheet\" href=\"${pubme.BASE_DIR}/pubme.css\" type=\"text/css\"/>"
       :html-postamble t
       :html-postamble-format (("en" "<p><p class=\"outline-2\">Author: %a</p></p>"))
-      :html-link-home "index.html"
+      :html-link-home "${pubme.BASE_DIR}/index.html"
       :with-sub-superscript nil
       :section-numbers nil
       :with-latex t
