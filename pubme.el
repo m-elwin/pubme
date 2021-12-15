@@ -11,6 +11,10 @@
 ;;; Use the #+GIT-PUBLISH-URL: to setup a remote git repository where the html is to be published (for use with static site hosting on e.g., github)
 ;;;    The output files will be placed in a git repository, with a remote at the GIT-PUBLISH-URL
 ;;;    when remote publishing, the current contents will be force-pushed to the remote
+;;; The string ${BASE_DIR} will be expanded to a relative path pointing to the base directory of exported files
+;;;    This feature was added as the easiest way to point to the sylesheet and make the home and up directories work when using
+;;;    nested org files, without needing to make boilerplate template code
+
 
 (require 'org)
 (require 'ox-html)
@@ -35,17 +39,33 @@
 
 (defconst pubme-dir (file-name-directory (if load-in-progress load-file-name (buffer-file-name))) "The installation directory of pubme")
 (defvar pubme-git-publish-url nil "Location where html files should be pushed when publishing")
+(defvar pubme-base-dir nil "Base directory of the website to publish")
 
 (load-file (concat pubme-dir "/pubme-debug.el"))
 
-
+(defun relative-dirs
+  (base child)
+  """ Get the relative path between the base and child directories, as a series of . values.
+      This function simply counts the number of forward slashes and outputs the appropriate number of ../
+      We already assume that child is a child of the base directory
+  """
+  (let ((count (- (length (split-string (expand-file-name child) "/")) (length (split-string (expand-file-name base) "/"))))
+        (relpath "."))
+    (dotimes (i count)
+      (setq relpath (concat relpath "/.."))
+      )
+    relpath
+    )
+)
 ;;; We just tweak the final html, since that is easier than figuring out org export
 ;;; (and I'm not convinced I can change the order of things like I need)
 (defun pubme-final-filter
     (text back-end info)
   (with-temp-buffer
-    (insert text)
-    ; Here we can tweak final html.  No longer needed at the moment
+    ;; Here we can tweak final html.
+    ;; First step is we do our macro replacement
+
+    (insert (replace-regexp-in-string "${BASE_DIR}" (relative-dirs pubme-base-dir (plist-get info :input-file)) text))
     (buffer-substring-no-properties (point-min) (point-max)) ;converts the buffer back to a string
     )
 )
@@ -132,6 +152,8 @@ return the directory where everything was published
   (if (not dir) (setq dir default-directory))
   (if (not publish-to) (setq publish-to 'pubme-publish-to-html))
   (setq pub-dir (concat (file-name-as-directory dir) "html"))
+  (setq pubme-base-dir dir)
+
   ;; Find all the org files
   ;; For the available options see https://orgmode.org/manual/Publishing-options.html
   (org-publish
@@ -146,7 +168,7 @@ return the directory where everything was published
       :html-html5-fancy t
       :html-head-include-scripts nil
       :html-head-include-default-style nil
-      :html-head "<link rel=\"stylesheet\" href=\"pubme.css\" type=\"text/css\"/><link rel=\"stylesheet\" href=\"../pubme.css\" type=\"text/css\"/><link rel=\"stylesheet\" href=\"../pubme.css\" type=\"text/css\"/>"
+      :html-head "<link rel=\"stylesheet\" href=\"${BASE_DIR}/pubme.css\" type=\"text/css\"/>"
       :html-postamble t
       :html-postamble-format (("en" "<p><p class=\"outline-2\">Author: %a</p></p>"))
       :html-link-home "index.html"
