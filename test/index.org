@@ -35,3 +35,5 @@ Testing the features of the pubme org-mode publishing script.
     #+END_SRC
 * Folded :folded:
   The text in this section is initially hidden
+* Next level
+[[./level1/l1.org][Next Level Link]]
