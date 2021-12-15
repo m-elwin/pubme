@@ -83,6 +83,8 @@
 (defun pubme-options-filter
     (exp-plist backend)
   """ Translate some PUBME-specific options into html """
+  ;; if the git-publish-url is set, set the pubme-git-publish-url appropriately
+  ;; After everything is published, this will be used to publish the url
   (let ((publish-url (plist-get exp-plist :git-publish-url)))
     (if (and pubme-git-publish-url publish-url)
         (progn
