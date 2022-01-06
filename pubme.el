@@ -193,7 +193,7 @@ return the directory where everything was published
    `("project-data"
      :base-directory ,(concat dir "/images")
      :base-extension any
-     :publishing-directory ,(concat (file-name-as-directory dir) "html")
+     :publishing-directory ,(concat (file-name-as-directory dir) "html/images")
      :publishing-function org-publish-attachment
      )
    :force
