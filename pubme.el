@@ -19,6 +19,13 @@
 (require 'org)
 (require 'ox-html)
 (require 'package)
+
+;;; cmake-mode is actually in site-lisp which is not on the load path by default
+;;; for some reason.  but we need cmake-mode to get cmake syntax highlighting
+;;; on export
+(add-to-list 'load-path "/usr/share/emacs/site-lisp")
+(require 'cmake-mode)
+
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/"))
 
