@@ -2399,7 +2399,8 @@ table td {
       }
       .org-variable-name {
         /* font-lock-variable-name-face */
-        color: #000000;
+          color: #004000;
+          font-weight: bold;
       }
       .org-variable-pitch {
       }
