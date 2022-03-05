@@ -15,7 +15,7 @@
 ;;;    This feature was added as the easiest way to point to the sylesheet and make the home and up directories work when using
 ;;;    nested org files, without needing to make boilerplate template code
 ;;; It can be escaped with \${pubme.BASE_DIR} (or \\ when using an elisp string)
-
+;;; THis also can use ORG-BABEL, with langagues specified below
 (require 'org)
 (require 'ox-html)
 (require 'package)
