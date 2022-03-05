@@ -20,6 +20,15 @@
 (require 'ox-html)
 (require 'package)
 
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((python . t))
+ )
+(setq org-confirm-babel-evaluate nil)
+(setq org-export-babel-evaluate t)
+(setq org-export-use-babel t)
+(setq org-babel-python-command "python3")
+
 ;;; cmake-mode is actually in site-lisp which is not on the load path by default
 ;;; for some reason.  but we need cmake-mode to get cmake syntax highlighting
 ;;; on export
