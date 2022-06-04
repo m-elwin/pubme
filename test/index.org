@@ -42,3 +42,16 @@ Testing the features of the pubme org-mode publishing script.
 In elisp code, use =\${pubme.BASE_DIR}= to expand to the relative path
 of this file to the base directory (in this case it is =${pubme.BASE_DIR}=).
 When using a string the =\= must itself be escaped (=\\=)
+
+** Source code
+#+HEADER: :Some otherheaders :and more
+#+HEADER: :folded
+#+BEGIN_src python :exports both :results output html
+x=2
+y=3
+print(f"x={x} and y={y}")
+#+END_src
+
+#+BEGIN_src python :exports both :results output html
+print("Some python results")
+#+END_src

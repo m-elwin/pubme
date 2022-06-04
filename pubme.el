@@ -7,7 +7,9 @@
 
 ;;; Used to publish a directory of org files to html, using my own css template
 ;;; Tag a headline with :folded: to make it be folded by default
-;;; The special block BEGIN_folded creates a folded section
+;;; The special block BEGIN_folded creates a folded block
+;;; Putting #+HEADER: :folded before a code block will cause that code block to be folded
+;;;   - Due to the current implementation of pubme, the :folded property must be on its own #+HEADER: line
 ;;; Use the #+GIT-PUBLISH-URL: to setup a remote git repository where the html is to be published (for use with static site hosting on e.g., github)
 ;;;    The output files will be placed in a git repository, with a remote at the GIT-PUBLISH-URL
 ;;;    when remote publishing, the current contents will be force-pushed to the remote
@@ -15,7 +17,7 @@
 ;;;    This feature was added as the easiest way to point to the sylesheet and make the home and up directories work when using
 ;;;    nested org files, without needing to make boilerplate template code
 ;;; It can be escaped with \${pubme.BASE_DIR} (or \\ when using an elisp string)
-;;; THis also can use ORG-BABEL, with langagues specified below
+;;; This also can use ORG-BABEL, with langagues specified below
 (require 'org)
 (require 'ox-html)
 (require 'package)
@@ -124,6 +126,17 @@
     )
   )
 
+(defun pubme-src-block
+    (src-block contents info)
+  """ Check for special properties of source code blocks """
+  (if (member ":folded" (org-element-property :header src-block))
+      (format "<details class=\"folded\"><summary>Code</summary>\n%s</details>"
+              (org-export-with-backend 'html src-block contents info)
+              )
+    (org-export-with-backend 'html src-block contents info)
+    )
+  )
+
 (defun pubme-options-filter
     (exp-plist backend)
   """ Translate some PUBME-specific options into html """
@@ -150,6 +163,7 @@
   :translate-alist
   '((headline . pubme-headline)
     (special-block . pubme-special-block)
+    (src-block . pubme-src-block)
     )
   :options-alist
   '((:git-publish-url "GIT-PUBLISH-URL" "git-publish-url" nil))
