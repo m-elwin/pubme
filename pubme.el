@@ -174,8 +174,26 @@
     (special-block . pubme-special-block)
     (src-block . pubme-src-block)
     )
+  ; options-alist sets some options to the values we want for the html5 export
   :options-alist
-  '((:git-publish-url "GIT-PUBLISH-URL" "git-publish-url" nil))
+  '((:git-publish-url "GIT-PUBLISH-URL" "git-publish-url" nil) ; url to publish html files via git
+    (:html-doctype "HTML_DOCTYPE" nil "html5") ; use html5
+    (:html-html5-fancy nil "html5-fancy" t)    ; use html5 tags
+    (:html-head-include-scripts nil "html-scripts" nil)  ; no standard org-mode scripts
+    (:html-head-include-default-style nil "html-style" nil) ; no default style
+    (:html-head   ; header to include the pubme css stylesheet
+     "HTML_HEAD"
+     nil
+     "<link rel=\"stylesheet\" href=\"${pubme.BASE_DIR}/pubme.css\" type=\"text/css\"/>")
+    (:html-postamble nil "html-postamble" t) ; do generate a post amble
+    (:html-postamble-format nil nil '(("en" "<p><p class=\"outline-2\">Author: %a</p></p>"))) ; include author information
+    (:html-link-home "HTML_LINK_HOME" nil "${pubme.BASE_DIR}/index.html") ; home link
+    (:html-link-up "HTML_LINK_UP" nil "../index.html")
+    (:with-sub-superscript nil "^" nil)
+    (:section-numbers nil "num" nil)
+    (:with-latex nil "tex" t)
+    (:with-tags nil "tags" 'not-in-toc)
+    )
   :menu-entry
   '(?p "Export to Pubme"
        ((?H "As HTML buffer" pubme-export-as-html)))
@@ -217,19 +235,6 @@ return the directory where everything was published
       :exclude "private/.*"
       :recursive t
       :broken-links mark
-      :html-doctype "html5"
-      :html-html5-fancy t
-      :html-head-include-scripts nil
-      :html-head-include-default-style nil
-      :html-head "<link rel=\"stylesheet\" href=\"${pubme.BASE_DIR}/pubme.css\" type=\"text/css\"/>"
-      :html-postamble t
-      :html-postamble-format (("en" "<p><p class=\"outline-2\">Author: %a</p></p>"))
-      :html-link-home "${pubme.BASE_DIR}/index.html"
-      :html-link-up "../index.html"
-      :with-sub-superscript nil
-      :section-numbers nil
-      :with-latex t
-      :with-tags not-in-toc
       )
    :force
    )
