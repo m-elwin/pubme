@@ -65,15 +65,17 @@
   (base child)
   """ Get the relative path between the base and child directories, as a series of . values.
       This function simply counts the number of forward slashes and outputs the appropriate number of ../
-      We already assume that child is a child of the base directory
+      We already assume that child is a child of the base directory.
   """
-  (let ((count (- (length (split-string (expand-file-name child) "/")) (length (split-string (expand-file-name base) "/"))))
-        (relpath "."))
-    (dotimes (i count)
-      (setq relpath (concat relpath "/.."))
-      )
-    relpath
-    )
+  (if base
+      (let ((count (- (length (split-string (expand-file-name child) "/")) (length (split-string (expand-file-name base) "/"))))
+            (relpath "."))
+        (dotimes (i count)
+          (setq relpath (concat relpath "/.."))
+          )
+        relpath
+        )
+    ".") ; nil base means we are in the current directory
   )
 
 (defun pubme-macro-expand
@@ -155,6 +157,13 @@
   exp-plist
   )
 
+;;;#autoload
+(defun pubme-export-as-html
+    (&optional async subtreep visible-only body-only ext-plist)
+  (interactive)
+  (org-export-to-buffer 'pubme-html "*Pubme HTML Export*"
+    async subtreep visible-only body-only ext-plist (lambda () ())))
+
 (org-export-define-derived-backend 'pubme-html 'html
   :filters-alist
   '((:filter-final-output . pubme-final-filter)
@@ -167,12 +176,18 @@
     )
   :options-alist
   '((:git-publish-url "GIT-PUBLISH-URL" "git-publish-url" nil))
+  :menu-entry
+  '(?p "Export to Pubme"
+       ((?H "As HTML buffer" pubme-export-as-html)))
   )
 
 (defun pubme-publish-to-html (plist filename pub-dir)
   "Publish an org file to a pubme html file. Return output file name."
   (org-publish-org-to 'pubme-html filename ".html" plist pub-dir)
   )
+
+
+
 
 (defun pubme-publish-to-debug (plist filename pub-dir)
   "Publish an org file to a debug html file. Return output file name."
