@@ -27,7 +27,6 @@
  '((python . t))
  )
 (setq org-confirm-babel-evaluate nil)
-(setq org-export-babel-evaluate t)
 (setq org-export-use-babel t)
 (setq org-babel-python-command "python3")
 
