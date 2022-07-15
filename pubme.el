@@ -220,6 +220,7 @@ PUBLISH-TO the backend to use for the html (defaults to pubme-publish-to-html)
 
 return the directory where everything was published
 "
+  (interactive)
   (if (not dir) (setq dir default-directory))
   (if (not publish-to) (setq publish-to 'pubme-publish-to-html))
   (setq pub-dir (concat (file-name-as-directory dir) "html"))
