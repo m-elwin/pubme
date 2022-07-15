@@ -7,7 +7,9 @@ Mostly using the aesthetics from above, but added a table of contents menu to th
 When printing, the menu will be hidden
 
 */
-
+.MathJax{
+    font-size: 16pt
+}
 nav#table-of-contents{
     width: 20%;
     height: 100%;
