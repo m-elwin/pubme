@@ -31,6 +31,13 @@
 (setq org-export-use-babel t)
 (setq org-babel-python-command "python3")
 
+;;; We don't want this setting when loading in interactive mode (e.g., if
+;;; this script is loaded in init.el
+;;; this setting stops emacs from guessing indentation
+(if noninteractive
+    (setq python-indent-guess-indent-offset nil)
+  )
+
 ;;; cmake-mode is actually in site-lisp which is not on the load path by default
 ;;; for some reason.  but we need cmake-mode to get cmake syntax highlighting
 ;;; on export
