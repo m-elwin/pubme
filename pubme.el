@@ -1,5 +1,5 @@
 #!/bin/sh
-":"; exec emacs --quick --script "$0" -- "$@" # -*- mode: emacs-lisp; lexical-binding: t; -*-
+":"; exec emacs -q --no-site-file -no-splash -no-x-resources --script "$0" -- "$@" # -*- mode: emacs-lisp; lexical-binding: t; -*-
 ;; See https://gist.github.com/ctarbide/99b0ac9f7d6bef19cdd3e9f71b4cbcf7 for meaning of the above line. 
 ;; Basically, This is a shell script that also functions as a valid elisp file
 ;; This way we can parse all arguments passed to the script and 
@@ -18,6 +18,8 @@
 ;;;    nested org files, without needing to make boilerplate template code
 ;;; It can be escaped with \${pubme.BASE_DIR} (or \\ when using an elisp string)
 ;;; This also can use ORG-BABEL, with langagues specified below
+(require 'cmake-mode)
+
 (require 'org)
 (require 'ox-html)
 (require 'package)
@@ -37,11 +39,6 @@
     (setq python-indent-guess-indent-offset nil)
   )
 
-;;; cmake-mode is actually in site-lisp which is not on the load path by default
-;;; for some reason.  but we need cmake-mode to get cmake syntax highlighting
-;;; on export
-(add-to-list 'load-path "/usr/share/emacs/site-lisp")
-(require 'cmake-mode)
 
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/"))
