@@ -17,7 +17,11 @@
 ;;;    This feature was added as the easiest way to point to the sylesheet and make the home and up directories work when using
 ;;;    nested org files, without needing to make boilerplate template code
 ;;; It can be escaped with \${pubme.BASE_DIR} (or \\ when using an elisp string)
-;;; This also can use ORG-BABEL, with langagues specified below
+;;; This also can use ORG-BABEL, with langagues specified below (currently just python)
+;;; Other
+;;; TODO: make this into its own literate document publishable with pubme
+;;; TODO: make it easier to use this within emacs
+
 (require 'cmake-mode)
 
 (require 'org)
