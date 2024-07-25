@@ -35,7 +35,7 @@
 (setq org-confirm-babel-evaluate nil)
 (setq org-export-use-babel t)
 (setq org-babel-python-command "python3")
-
+(setq org-list-allow-alphabetical 1)
 ;;; We don't want this setting when loading in interactive mode (e.g., if
 ;;; this script is loaded in init.el
 ;;; this setting stops emacs from guessing indentation

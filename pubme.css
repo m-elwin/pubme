@@ -35,7 +35,7 @@ nav#table-of-contents{
 .outline-2, header, nav + p, div#footnotes, div#content > details{
     margin: 0 auto;
     min-width: 30em;
-    max-width: 50em;
+    max-width: 70em;
 }
 
 .footpara {
