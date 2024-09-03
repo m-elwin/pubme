@@ -27,7 +27,6 @@
 (require 'org)
 (require 'ox-html)
 (require 'package)
-
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((python . t))
@@ -48,7 +47,6 @@
 (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/"))
 
 
-(setq package-load-list '((htmlize t)))
 (package-initialize)
 
 ;;; Allow us to apply css to syntax highlighting
@@ -56,6 +54,15 @@
   (if (yes-or-no-p "Install htmlize for syntax highlighting in code blocks? ")
       (progn
         (package-install 'htmlize)
+        )
+    )
+  )
+
+;; fancier bibliographies
+(unless (package-installed-p 'citeproc)
+  (if (yes-or-no-p "Install citeproc for citations? ")
+      (progn
+        (package-install 'citeproc)
         )
     )
   )
