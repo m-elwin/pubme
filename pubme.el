@@ -13,6 +13,13 @@
 ;;; Use the #+GIT-PUBLISH-URL: to setup a remote git repository where the html is to be published (for use with static site hosting on e.g., github)
 ;;;    The output files will be placed in a git repository, with a remote at the GIT-PUBLISH-URL
 ;;;    when remote publishing, the current contents will be force-pushed to the remote
+;;;   - Ther use of this field is optional.  If it is omitted, the files will be dumped into the html/directory.
+;;;   - Using GIT-PUBLISH-URL allows the source repository and deployment repository to be seperate (e.g., one private and one public on github).
+;;;   - It also keeps the output of pubme out of the git history.
+;;;   - With new github features, a private repository can now have it's html directory published directly.
+;;;   - In this mode, GIT-PUBLISH-URL is not used. Instead the output files are added to git and pushed to github
+;;;   - This enables a more easy review of the materials that are going to be included (since you'll see them in git) and
+;;;   - Also provides flexibility to have files that are not part of the pubme build process more easily included
 ;;; The string ${pubme.BASE_DIR} will be expanded to a relative path pointing to the base directory of exported files
 ;;;    This feature was added as the easiest way to point to the sylesheet and make the home and up directories work when using
 ;;;    nested org files, without needing to make boilerplate template code
