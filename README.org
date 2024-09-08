@@ -1,6 +1,8 @@
 #+TITLE: pubme org mode website
 #+AUTHOR: Matthew Elwin
-The org-mode publishing method that I use for my website.
+The org-mode publishing method that I use for my website [[https://numsr.github.io]].
+The goal is to enable writing class-notes websites without worrying about formatting.
+This package is maintained in a good-enough-for-me state.
 
 * Usage
 1. Each website is a nested structure of =.org= mode files.
@@ -8,6 +10,7 @@ The org-mode publishing method that I use for my website.
    #+BEGIN_folded
    =pubme= is both an emacs script file and a shell script (using emacs as the interpreter)
    #+END_folded
+   - While =emacs= has the best support for =.org=, any editor can be used to write the =.org= files.
 3. Files stored under =private/=  will not be published
 4. See =test/= for an example of the features
 
