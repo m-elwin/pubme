@@ -243,7 +243,7 @@
      nil
      "<link rel=\"stylesheet\" href=\"${pubme.BASE_DIR}/pubme.css\" type=\"text/css\"/>")
     (:html-postamble nil "html-postamble" t) ; do generate a post amble
-    (:html-postamble-format nil nil '(("en" "<p><p class=\"outline-2\">Author: %a</p></p>"))) ; include author information
+    (:html-postamble-format nil nil '(("en" "<p><p class=\"outline-2\">Author: %a. Posted: %d</p></p>"))) ; include author and date information
     (:html-link-home "HTML_LINK_HOME" nil "${pubme.BASE_DIR}/index.html") ; home link
     (:html-link-up "HTML_LINK_UP" nil "../index.html")
     (:with-sub-superscript nil "^" nil)
@@ -282,7 +282,6 @@ return the directory where everything was published
   (if (not publish-to) (setq publish-to 'pubme-publish-to-html))
   (setq pub-dir (concat (file-name-as-directory dir) "html"))
   (setq pubme-base-dir dir)
-
   ;; Find all the symlinks in the base directory
 
   ;; Find all the org files
