@@ -18,10 +18,24 @@
 ;;;    nested org files, without needing to make boilerplate template code
 ;;; It can be escaped with \${pubme.BASE_DIR} (or \\ when using an elisp string)
 ;;; This also can use ORG-BABEL, with langagues specified below (currently just python)
-;;; Other
+;;; The images/ directory is copied over into the html.
+;;; The private/ directory is never exported
+;;; Symlinks in the base directory are ignored.
+;;;  - This is a somewhat ad-hoc feature designed to facilitate a specific use-case on github pages:
+;;;  - Github maps the repository at github.com/organization/organization.github.io to the url https://organization.github.io/
+;;;  - If you also have repos to repositories at https://organization.github.io/other_repo
+;;;  - You can keep the source repositories side-by-side on your computer: e.g. website/organization.github.io and website/other_repo
+;;;  - If you make a symlink website/organization.github.io/other_repo  -> ../other_repo, you can now use the same
+;;;  - relative org-mode links in the raw document and in the published result.
+;;;  (Why not just recurse through symlinks?): This script is not currently designed to have multiple top-level projects so,
+;;;  for example, the images in other_repo/images would not be published.
+;;;  Also, in my usage, it is advantageous to update and publish seperate parts of the notes separately and not need to build
+;;;  All of my notes every time. 
 ;;; TODO: make this into its own literate document publishable with pubme
 ;;; TODO: make it easier to use this within emacs
-
+;;; TODO: Allow for directories other than the images/ directory to be copied directly to html
+;;; TODO: There is limitted support for 'citeproc to use cls stylesheets. need to
+;;;       Provide one css stylesheet that is ieee format and compatible with ieee bibtex formatting
 (require 'cmake-mode)
 
 (require 'org)
@@ -90,6 +104,28 @@
         relpath
         )
     ".") ; nil base means we are in the current directory
+  )
+
+(defun find-symlinks
+    (dir)
+  """ Find all the symlinks in the current directory and return as list """
+  (seq-filter (lambda (file)
+                       (file-symlink-p (concat dir "/" file)))
+                       (directory-files dir))
+  )
+
+(defun file-list-to-regexp
+    (filelist)
+  """ Convert a list of files to a regexp that matches against any of the files
+  Example:
+  (file-list-to-regexp '(file1 file2)) -> file1\\|file2
+
+  TODO: make it so each submatch must match exactly
+  """
+  (seq-reduce '(lambda (regex file)
+                 (concat regex "\\|" file )
+                 )
+              (cdr filelist) (car filelist))
   )
 
 (defun pubme-macro-expand
@@ -240,6 +276,8 @@ return the directory where everything was published
   (setq pub-dir (concat (file-name-as-directory dir) "html"))
   (setq pubme-base-dir dir)
 
+  ;; Find all the symlinks in the base directory
+
   ;; Find all the org files
   ;; For the available options see https://orgmode.org/manual/Publishing-options.html
   (org-publish
@@ -247,7 +285,7 @@ return the directory where everything was published
       :base-directory ,dir
       :publishing-directory ,pub-dir
       :publishing-function ,publish-to
-      :exclude "private/.*"
+      :exclude ,(concat "private\\|" (file-list-to-regexp (find-symlinks "/home/elwin/courses/nu-msr.github.io")))
       :recursive t
       :broken-links mark
       )
