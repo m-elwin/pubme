@@ -9,5 +9,14 @@ The org-mode publishing method that I use for my website.
    =pubme= is both an emacs script file and a shell script (using emacs as the interpreter)
    #+END_folded
 3. Files stored under =private/=  will not be published
-3. Setting =#+GIT-PUBLISH-URL= sets the url to a remote git repository. Running =pubme -p= will push the website to that repository.
 4. See =test/= for an example of the features
+
+There are two methods for publishing the website:
+1. Setting =#+GIT-PUBLISH-URL= sets up a remote git repository. Running =pubme -p= will push the generated website to that repository.
+   - This mode is most useful for publishing the website using a service other than Github Pages, but it can also be used with Github Pages.
+   - In some ways this method is "cleaner" because generated files are not included in the repository itself.
+2. You can add the generated output files to the git repository and publish with the Github pages feature.
+   - Setup the repository on Github to use an action to publish "static html" pages and *edit* the =static.yml= file so that it publishes
+     only the =html= directory.
+   - Add the generated outputs to git. Doing this makes it easier to see what pages are going to be changed when you publish.
+   - I recommend doing development on a separate =devel= branch and publishing pages from =main=
