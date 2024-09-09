@@ -214,6 +214,12 @@
   exp-plist
   )
 
+(defun every-other (lst)
+  (cond
+   ((null lst) '())
+   (t (cons (car lst) (every-other (cdr (cdr lst)))))
+   )
+  )
 ;;;#autoload
 (defun pubme-export-as-html
     (&optional async subtreep visible-only body-only ext-plist)
@@ -242,8 +248,14 @@
      "HTML_HEAD"
      nil
      "<link rel=\"stylesheet\" href=\"${pubme.BASE_DIR}/pubme.css\" type=\"text/css\"/>")
-    (:html-postamble nil "html-postamble" t) ; do generate a post amble
-    (:html-postamble-format nil nil '(("en" "<p><p class=\"outline-2\">Author: %a. Posted: %d</p></p>"))) ; include author and date information
+    ; For understanding the postamble see https://emacs-orgmode.gnu.narkive.com/nizCPWbL/o-conditionally-formatting-org-html-postamble-format
+    (:html-postamble nil nil (lambda (plist)
+                               (let ((author (car (plist-get plist :author)))
+                                     (date (car (plist-get plist :date))))
+                                 (concat
+                                  "<p><p class=\"outline-2\">"
+                                  (if author (concat "Author: " author ". "))
+                                  (if date (concat " Date: " date ".")) "</p></p>"))))
     (:html-link-home "HTML_LINK_HOME" nil "${pubme.BASE_DIR}/index.html") ; home link
     (:html-link-up "HTML_LINK_UP" nil "../index.html")
     (:with-sub-superscript nil "^" nil)
