@@ -155,10 +155,32 @@
     )
 )
 
+(defvar pubme-unique-id-table (make-hash-table :test 'equal)
+  "Used to keep track of unique ids that are created when headlines are encountered.")
+
+(defun pubme-unique-id (headline)
+       """ Create a unique custom id for a headline, if there isn't a custom id specified.
+This prevents the custom id from being a random org#234232 that changes with each compilation"""
+(unless (org-element-property :CUSTOM_ID headline) ;we don't have a custom id
+  (org-element-put-property
+   headline :CUSTOM_ID
+   (let ((base-id
+          (format "%s-%d"
+                  (downcase
+                   (replace-regexp-in-string "[^a-zA-Z0-9]+" "-"
+                                             (org-element-property :raw-value headline)))
+                  (org-element-property :level headline))))
+       ;; each base-id has an entry in the hashtable that serves a count for that base id
+       ;; whenever a header with the baseid is found, the next number is used
+     (format "%s-P-%d" base-id
+             (puthash base-id
+                      (1+ (gethash base-id pubme-unique-id-table 0))
+                      pubme-unique-id-table))))))
 
 (defun pubme-headline
     (headline contents info)
   """ Translate headlines into HTML """
+  (pubme-unique-id headline)
   (if (member "folded" (org-element-property :tags headline))
       (let* ((level (+ (org-export-get-relative-level headline info)
                        (1- (plist-get info :html-toplevel-hlevel))))
@@ -214,12 +236,7 @@
   exp-plist
   )
 
-(defun every-other (lst)
-  (cond
-   ((null lst) '())
-   (t (cons (car lst) (every-other (cdr (cdr lst)))))
-   )
-  )
+
 ;;;#autoload
 (defun pubme-export-as-html
     (&optional async subtreep visible-only body-only ext-plist)
@@ -316,6 +333,7 @@ return the directory where everything was published
      :base-extension any
      :publishing-directory ,(concat (file-name-as-directory dir) "html/images")
      :publishing-function org-publish-attachment
+     :recursive t
      )
    :force
    )
