@@ -127,13 +127,18 @@
   Example:
   (file-list-to-regexp '(file1 file2)) -> file1\\|file2
 
+  If filelist is empty then the regex will match nothing
   TODO: make it so each submatch must match exactly
   """
-  (seq-reduce '(lambda (regex file)
+  (if filelist (seq-reduce '(lambda (regex file)
                  (concat regex "\\|" file )
                  )
-              (cdr filelist) (car filelist))
-  )
+                           (cdr filelist) (car filelist))
+    "\\`\\'"
+    ;; The regex "\\`\\'" matches against nothing so it can be safely chained
+    ;; in an | list. It matches the start of the string and the end of the string
+    ;; but start != end unless string length is 0, in which case regex will not match
+  ))
 
 (defun pubme-macro-expand
     (var exp text)
@@ -320,7 +325,7 @@ return the directory where everything was published
       :base-directory ,dir
       :publishing-directory ,pub-dir
       :publishing-function ,publish-to
-      :exclude ,(concat "private\\|" (file-list-to-regexp (find-symlinks "/home/elwin/courses/nu-msr.github.io")))
+      :exclude ,(concat "private\\|" (file-list-to-regexp (find-symlinks dir)))
       :recursive t
       :broken-links mark
       )
