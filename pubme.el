@@ -304,6 +304,8 @@ This prevents the custom id from being a random org#234232 that changes with eac
   (org-publish-org-to 'pubme-html-debug filename ".html" plist pub-dir)
   )
 
+(add-hook 'org-export-before-parsing-functions 'org-babel-tangle)
+
 (defun pubme (&optional dir publish-to force)
   "Publish a directory containing org files.
 
