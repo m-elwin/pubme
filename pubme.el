@@ -26,6 +26,9 @@
 ;;; It can be escaped with \${pubme.BASE_DIR} (or \\ when using an elisp string)
 ;;; This also can use ORG-BABEL, with langagues specified below (currently just python)
 ;;; The images/ directory is copied over into the html.
+;;; The code/ directory is copied over into the html.
+;;; Tangled code is expanded. I recommend placing it in the html/code directory
+;;; You should make an empty code/ directory for this to work
 ;;; The private/ directory is never exported
 ;;; Symlinks in the base directory are ignored.
 ;;;  - This is a somewhat ad-hoc feature designed to facilitate a specific use-case on github pages:
@@ -296,19 +299,17 @@ This prevents the custom id from being a random org#234232 that changes with eac
   )
 
 
-
-
 (defun pubme-publish-to-debug (plist filename pub-dir)
   "Publish an org file to a debug html file. Return output file name."
   (org-publish-org-to 'pubme-html-debug filename ".html" plist pub-dir)
   )
 
-(defun pubme (&optional dir publish-to)
+(defun pubme (&optional dir publish-to force)
   "Publish a directory containing org files.
 
 DIR directory containing org files that should be published as a single website. If omitted, will be the current directory
 PUBLISH-TO the backend to use for the html (defaults to pubme-publish-to-html)
-
+FORCE publish regardless of whether files have been modified. Force will also happen if the html/ output directory is missing
 return the directory where everything was published
 "
   (interactive)
@@ -316,12 +317,40 @@ return the directory where everything was published
   (if (not publish-to) (setq publish-to 'pubme-publish-to-html))
   (setq pub-dir (concat (file-name-as-directory dir) "html"))
   (setq pubme-base-dir dir)
-  ;; Find all the symlinks in the base directory
+
+  (let (
+        ;; projects need a unique prefix name so their cache doesn't interfere with other
+        ;; org publishing projects
+        (prefix (replace-regexp-in-string "/\\|~" "_" dir))
+        ;; if true the output exists
+        (output-exists (file-directory-p pub-dir)))
+
+  (org-publish
+   `(,(concat prefix "images")
+     :base-directory ,(concat dir "/images")
+     :base-extension any
+     :publishing-directory ,(concat (file-name-as-directory dir) "html/images")
+     :publishing-function org-publish-attachment
+     :recursive t
+     )
+     (when (or force (not output-exists)) :force)
+   )
+
+  (org-publish
+   `(,(concat prefix "code")
+     :base-directory ,(concat dir "/code")
+     :base-extension any
+     :publishing-directory ,(concat (file-name-as-directory dir) "html/code")
+     :publishing-function org-publish-attachment
+     :recursive t
+     )
+     (when (or force (not output-exists)) :force)
+   )
 
   ;; Find all the org files
   ;; For the available options see https://orgmode.org/manual/Publishing-options.html
   (org-publish
-   `("main-project"
+   `(,(concat prefix "main")
       :base-directory ,dir
       :publishing-directory ,pub-dir
       :publishing-function ,publish-to
@@ -329,29 +358,20 @@ return the directory where everything was published
       :recursive t
       :broken-links mark
       )
-   :force
+     (when (or force (not output-exists)) :force)
    )
 
-  (org-publish
-   `("project-data"
-     :base-directory ,(concat dir "/images")
-     :base-extension any
-     :publishing-directory ,(concat (file-name-as-directory dir) "html/images")
-     :publishing-function org-publish-attachment
-     :recursive t
-     )
-   :force
-   )
 
   (org-publish
-   `("pubme-style"
+   `(,(concat prefix "style")
      :base-directory ,(file-name-directory load-file-name)
      :base-extension "css\\|html\\|jpg\\|png\\|svg"
      :publishing-directory ,(concat (file-name-as-directory dir) "html")
      :publishing-function org-publish-attachment
      )
-   :force
+     (when (or force (not output-exists)) :force)
    )
+  )
   (if pubme-git-publish-url
       (progn
         (message "Remote git url for publishing is: %s" pubme-git-publish-url)
@@ -383,29 +403,33 @@ dir - the publishing directory (set to default-directory by default)
               generate markup with debugging information")
   (message " -p, --push
               push the output html to the hosting site. Hosting site is
-              specified in index.org with #+GIT-PUBLISH-URL: git_remote_url_here")      
+              specified in index.org with #+GIT-PUBLISH-URL: git_remote_url_here")
+  (message " -f, --force
+              force publishing all files even if they have not been modified")
   )
 
 
 ;; if running as a script, parse the command line and call the appropriate function
 (if noninteractive
-    (let ((projdir default-directory) (git-push nil) (pdir nil))
+    (let ((projdir default-directory) (git-push nil) (pdir nil) (force nil) (pub-to 'pubme-publish-to-html))
       (setq make-backup-files nil)
       (while argv
         (let ((option (pop argv)))
           (cond
            ((string= option "--")               nil)
-           ((string= option "-h")               (progn (pubme-print-usage) (kill-emacs 0))) 
+           ((string= option "-h")               (progn (pubme-print-usage) (kill-emacs 0)))
            ((string= option "--help")           (progn (pubme-print-usage) (kill-emacs 0)))
-           ((string= option "-d")               (progn (pubme projdir 'pubme-publish-to-debug) (kill-emacs 0))) 
-           ((string= option "--debug")          (progn (pubme projdir 'pubme-publish-to-debug) (kill-emacs 0)))
+           ((string= option "-d")               (setq pub-to 'pubme-publish-to-debug))
+           ((string= option "--debug")          (setq pub-to jpubme-publish-to-debug))
            ((string= option "-p")               (setq git-push t))
            ((string= option "--push")           (setq git-push t))
+           ((string= option "-f")               (setq force t))
+           ((string= option "--force")          (setq force t))
            ((not (string-prefix-p option "--")) (setq projdir option))
            )
           )
         )
-      (setq pub-dir (pubme projdir))
+      (setq pub-dir (pubme projdir pub-to force))
       (if git-push
           (if pubme-git-publish-url
               (progn
