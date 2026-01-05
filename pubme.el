@@ -46,7 +46,6 @@
 ;;; TODO: Allow for directories other than the images/ directory to be copied directly to html
 ;;; TODO: There is limitted support for 'citeproc to use cls stylesheets. need to
 ;;;       Provide one css stylesheet that is ieee format and compatible with ieee bibtex formatting
-(require 'cmake-mode)
 
 (require 'org)
 (require 'ox-html)
@@ -87,6 +86,15 @@
   (if (yes-or-no-p "Install citeproc for citations? ")
       (progn
         (package-install 'citeproc)
+        )
+    )
+  )
+
+;; cmake formatting
+(unless (package-installed-p 'cmake-mode)
+  (if (yes-or-no-p "Install cmake-mode for cmake formatting? ")
+      (progn
+        (package-install 'cmake-mode)
         )
     )
   )
