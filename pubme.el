@@ -301,6 +301,20 @@ This prevents the custom id from being a random org#234232 that changes with eac
        ((?H "As HTML buffer" pubme-export-as-html)))
   )
 
+(defun pubme-publish-latex (plist filename pub-dir)
+  "Publish LaTeX file using AUCTeX synchronously into pub-dir."
+  (require 'tex)
+  (let ((TeX-process-asynchronous nil)
+        (TeX-save-query nil)
+        (Tex-view-program-selection '((output-pdf "Ignore"))))
+    (with-current-buffer (find-file-noselect filename)
+      (let ((default-directory (file-name-directory filename))
+            (TeX-output-dir (expand-file-name pub-dir)))
+        (make-directory TeX-output-dir t)
+        (TeX-command-run-all nil)
+        (save-buffer))
+      (kill-buffer))))
+
 (defun pubme-publish-to-html (plist filename pub-dir)
   "Publish an org file to a pubme html file. Return output file name."
   (org-publish-org-to 'pubme-html filename ".html" plist pub-dir)
@@ -380,8 +394,19 @@ return the directory where everything was published
      :publishing-function org-publish-attachment
      )
      (when (or force (not output-exists)) :force)
-   )
-  )
+     )
+
+  ;;; tex files
+  (org-publish
+   `(,(concat prefix "latex")
+     :base-directory ,dir
+     :base-extension "tex"
+     :publishing-function pubme-publish-latex
+     :publishing-directory ,pub-dir
+      :exclude ,(concat "private\\|" (file-list-to-regexp (find-symlinks dir)))
+      :recursive t
+      ))
+
   (if pubme-git-publish-url
       (progn
         (message "Remote git url for publishing is: %s" pubme-git-publish-url)
@@ -393,6 +418,7 @@ return the directory where everything was published
     )
   pub-dir
   )
+)
 
 (defun pubme-git-push-html(giturl &optional dir)
   "Push the html file to a remote git repository
