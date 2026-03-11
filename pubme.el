@@ -302,18 +302,17 @@ This prevents the custom id from being a random org#234232 that changes with eac
   )
 
 (defun pubme-publish-latex (plist filename pub-dir)
-  "Publish LaTeX file using AUCTeX synchronously into pub-dir."
-  (require 'tex)
-  (let ((TeX-process-asynchronous nil)
-        (TeX-save-query nil)
-        (Tex-view-program-selection '((output-pdf "Ignore"))))
-    (with-current-buffer (find-file-noselect filename)
-      (let ((default-directory (file-name-directory filename))
-            (TeX-output-dir (expand-file-name pub-dir)))
-        (make-directory TeX-output-dir t)
-        (TeX-command-run-all nil)
-        (save-buffer))
-      (kill-buffer))))
+  "Compile LaTeX file and publish the PDF to PUB-DIR.
+   Requires latexmk to be installed"
+  (let ((default-directory (file-name-directory filename)))
+    (make-directory pub-dir t)
+    (call-process "latexmk" nil nil nil
+                  "-pdf"
+                  "-interaction=nonstopmode"
+                  "-halt-on-error"
+                  "-auxdir=build"
+                  (concat "-outdir=" pub-dir)
+                  filename)))
 
 (defun pubme-publish-to-html (plist filename pub-dir)
   "Publish an org file to a pubme html file. Return output file name."
