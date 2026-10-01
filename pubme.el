@@ -58,11 +58,14 @@
 (setq org-export-use-babel t)
 (setq org-babel-python-command "python3")
 (setq org-list-allow-alphabetical 1)
-;;; We don't want this setting when loading in interactive mode (e.g., if
-;;; this script is loaded in init.el
-;;; this setting stops emacs from guessing indentation
+
 (if noninteractive
-    (setq python-indent-guess-indent-offset nil)
+    (progn
+      ;; don't guess indendation or mess with indendations when publishing
+      (setq python-indent-guess-indent-offset nil)
+      ;; when running as a batch processing, don't dump backtraces (re-enable with --backtrace)
+      ;; backtraces contain the full org parse tree
+      (setq backtrace-on-error-noninteractive nil))
   )
 
 
@@ -441,6 +444,8 @@ dir - the publishing directory (set to default-directory by default)
               specified in index.org with #+GIT-PUBLISH-URL: git_remote_url_here")
   (message " -f, --force
               force publishing all files even if they have not been modified")
+  (message "  --backtrace
+              print a full lisp backtrace when an error occurs")
   )
 
 
@@ -455,7 +460,8 @@ dir - the publishing directory (set to default-directory by default)
            ((string= option "-h")               (progn (pubme-print-usage) (kill-emacs 0)))
            ((string= option "--help")           (progn (pubme-print-usage) (kill-emacs 0)))
            ((string= option "-d")               (setq pub-to 'pubme-publish-to-debug))
-           ((string= option "--debug")          (setq pub-to jpubme-publish-to-debug))
+           ((string= option "--debug")          (setq pub-to 'pubme-publish-to-debug))
+           ((string= option "--backtrace")      (setq backtrace-on-error-noninteractive t))
            ((string= option "-p")               (setq git-push t))
            ((string= option "--push")           (setq git-push t))
            ((string= option "-f")               (setq force t))
