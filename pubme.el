@@ -13,10 +13,11 @@
 ;;; Use the #+GIT-PUBLISH-URL: to setup a remote git repository where the html is to be published (for use with static site hosting on e.g., github)
 ;;;    The output files will be placed in a git repository, with a remote at the GIT-PUBLISH-URL
 ;;;    when remote publishing, the current contents will be force-pushed to the remote
-;;;   - Ther use of this field is optional.  If it is omitted, the files will be dumped into the html/directory.
+;;;   - Ther use of this field is optional.  If it is omitted, the files will be dumped into the docs/ directory (see pubme-output-dir).
 ;;;   - Using GIT-PUBLISH-URL allows the source repository and deployment repository to be seperate (e.g., one private and one public on github).
 ;;;   - It also keeps the output of pubme out of the git history.
-;;;   - With new github features, a private repository can now have it's html directory published directly.
+;;;   - With new github features, a private repository can now have it's docs/ directory published directly from a branch.
+;;;   - A .nojekyll file is always written to the output directory so Github Pages serves the files as-is.
 ;;;   - In this mode, GIT-PUBLISH-URL is not used. Instead the output files are added to git and pushed to github
 ;;;   - This enables a more easy review of the materials that are going to be included (since you'll see them in git) and
 ;;;   - Also provides flexibility to have files that are not part of the pubme build process more easily included
@@ -27,7 +28,7 @@
 ;;; This also can use ORG-BABEL, with langagues specified below (currently just python)
 ;;; The images/ directory is copied over into the html.
 ;;; The code/ directory is copied over into the html.
-;;; Tangled code is expanded. I recommend placing it in the html/code directory
+;;; Tangled code is expanded. I recommend placing it in the docs/code directory
 ;;; You should make an empty code/ directory for this to work
 ;;; The private/ directory is never exported
 ;;; Symlinks in the base directory are ignored.
@@ -107,6 +108,9 @@
 (defconst pubme-dir (file-name-directory (if load-in-progress load-file-name (buffer-file-name))) "The installation directory of pubme")
 (defvar pubme-git-publish-url nil "Location where html files should be pushed when publishing")
 (defvar pubme-base-dir nil "Base directory of the website to publish")
+(defvar pubme-output-dir "docs"
+  "Name of the output directory, relative to the project directory.
+Defaults to docs/ so that Github Pages can serve it directly from a branch.")
 
 (load-file (concat pubme-dir "/pubme-debug.el"))
 
@@ -335,13 +339,13 @@ This prevents the custom id from being a random org#234232 that changes with eac
 
 DIR directory containing org files that should be published as a single website. If omitted, will be the current directory
 PUBLISH-TO the backend to use for the html (defaults to pubme-publish-to-html)
-FORCE publish regardless of whether files have been modified. Force will also happen if the html/ output directory is missing
+FORCE publish regardless of whether files have been modified. Force will also happen if the output directory (`pubme-output-dir') is missing
 return the directory where everything was published
 "
   (interactive)
   (if (not dir) (setq dir default-directory))
   (if (not publish-to) (setq publish-to 'pubme-publish-to-html))
-  (setq pub-dir (concat (file-name-as-directory dir) "html"))
+  (setq pub-dir (concat (file-name-as-directory dir) pubme-output-dir))
   (setq pubme-base-dir dir)
 
   (let (
@@ -355,7 +359,7 @@ return the directory where everything was published
    `(,(concat prefix "images")
      :base-directory ,(concat dir "/images")
      :base-extension any
-     :publishing-directory ,(concat (file-name-as-directory dir) "html/images")
+     :publishing-directory ,(concat (file-name-as-directory pub-dir) "images")
      :publishing-function org-publish-attachment
      :recursive t
      )
@@ -366,7 +370,7 @@ return the directory where everything was published
    `(,(concat prefix "code")
      :base-directory ,(concat dir "/code")
      :base-extension any
-     :publishing-directory ,(concat (file-name-as-directory dir) "html/code")
+     :publishing-directory ,(concat (file-name-as-directory pub-dir) "code")
      :publishing-function org-publish-attachment
      :recursive t
      )
@@ -392,7 +396,7 @@ return the directory where everything was published
    `(,(concat prefix "style")
      :base-directory ,(file-name-directory load-file-name)
      :base-extension "css\\|html\\|jpg\\|png\\|svg"
-     :publishing-directory ,(concat (file-name-as-directory dir) "html")
+     :publishing-directory ,pub-dir
      :publishing-function org-publish-attachment
      )
      (when (or force (not output-exists)) :force)
@@ -408,6 +412,10 @@ return the directory where everything was published
       :exclude ,(concat "private\\|" (file-list-to-regexp (find-symlinks dir)))
       :recursive t
       ))
+
+  ;; Tell Github Pages to serve the files as-is rather than running Jekyll on them
+  ;; (Jekyll would otherwise drop files and directories beginning with _)
+  (write-region "" nil (concat (file-name-as-directory pub-dir) ".nojekyll"))
 
   (if pubme-git-publish-url
       (progn
@@ -444,6 +452,8 @@ dir - the publishing directory (set to default-directory by default)
               specified in index.org with #+GIT-PUBLISH-URL: git_remote_url_here")
   (message " -f, --force
               force publishing all files even if they have not been modified")
+  (message " -o, --output DIR
+              name of the output directory, relative to project-dir (default: docs)")
   (message "  --backtrace
               print a full lisp backtrace when an error occurs")
   )
@@ -466,6 +476,8 @@ dir - the publishing directory (set to default-directory by default)
            ((string= option "--push")           (setq git-push t))
            ((string= option "-f")               (setq force t))
            ((string= option "--force")          (setq force t))
+           ((string= option "-o")               (setq pubme-output-dir (pop argv)))
+           ((string= option "--output")         (setq pubme-output-dir (pop argv)))
            ((not (string-prefix-p option "--")) (setq projdir option))
            )
           )

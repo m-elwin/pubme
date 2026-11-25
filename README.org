@@ -6,7 +6,7 @@ This package is maintained in a good-enough-for-me state.
 
 * Usage
 1. Each website is a nested structure of =.org= mode files.
-2. Running =pubme= inside this directory structure will generate an =html= directory with the website.
+2. Running =pubme= inside this directory structure will generate a =docs= directory with the website (use =-o DIR= to choose a different directory).
    #+BEGIN_folded
    =pubme= is both an emacs script file and a shell script (using emacs as the interpreter)
    #+END_folded
@@ -19,7 +19,7 @@ There are two methods for publishing the website:
    - This mode is most useful for publishing the website using a service other than Github Pages, but it can also be used with Github Pages.
    - In some ways this method is "cleaner" because generated files are not included in the repository itself.
 2. You can add the generated output files to the git repository and publish with the Github pages feature.
-   - Setup the repository on Github to use an action to publish "static html" pages and *edit* the =static.yml= file so that it publishes
-     only the =html= directory.
+   - In the repository's Github settings, under Pages, set the source to "Deploy from a branch" and select the =/docs= folder.
+   - =pubme= writes a =.nojekyll= file into =docs/= so Github serves the files as-is instead of running Jekyll on them.
    - Add the generated outputs to git. Doing this makes it easier to see what pages are going to be changed when you publish.
    - I recommend doing development on a separate =devel= branch and publishing pages from =main=
